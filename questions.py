@@ -1,5 +1,6 @@
 import random
 
+# Lista de palabras para el juego
 words = [
     "python",
     "programa",
@@ -11,9 +12,10 @@ words = [
     "lista",
 ]
 
+# Elegir una palabra aleatoria de la lista
 word = random.choice(words)
-guessed = []
-attempts = 6
+guessed = []  # Letras que el jugador ya adivinó
+attempts = 6  # Número de intentos permitidos
 
 print("¡Bienvenido al Ahorcado!")
 print()
@@ -33,21 +35,32 @@ while attempts > 0:
         print("¡Ganaste!")
         break
 
+    # Mostrar intentos restantes y letras usadas
     print(f"Intentos restantes: {attempts}")
     print(f"Letras usadas: {', '.join(guessed)}")
-    
-    letter = input("Ingresá una letra: ")
 
-    if letter in guessed:
-        print("Ya usaste esa letra.")
-    elif letter in word:
-        guessed.append(letter)
-        print("¡Bien! Esa letra está en la palabra.")
+    # Pedir al jugador que ingrese una letra y convertirla a minúscula
+    letter = input("Ingresá una letra: ").lower()
+
+    # Validar que la entrada sea una sola letra
+    if len(letter) == 1 and letter.isalpha():
+        if letter in guessed:
+            # La letra ya fue adivinada anteriormente
+            print("Ya usaste esa letra.")
+        elif letter in word:
+            # La letra está en la palabra
+            guessed.append(letter)
+            print("¡Bien! Esa letra está en la palabra.")
+        else:
+            # La letra no está en la palabra
+            guessed.append(letter)
+            attempts -= 1  # Restar un intento
+            print("Esa letra no está en la palabra.")
     else:
-        guessed.append(letter)
-        attempts -= 1
-        print("Esa letra no está en la palabra.")
-    
+        # Entrada inválida: más de una letra, número o símbolo
+        print("Entrada no válida")
+
     print()
 else:
+    # Si se terminaron los intentos, mostrar la palabra correcta
     print(f"¡Perdiste! La palabra era: {word}")
