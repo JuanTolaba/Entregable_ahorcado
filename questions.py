@@ -1,6 +1,6 @@
-import random
+import random  
 
-# Diccionario de categorías con listas de palabras
+# Diccionario con categorías y sus palabras
 categories = {
     "Programación": ["python", "programa", "variable", "funcion", "bucle", "cadena", "entero", "lista"],
     "Animales": ["perro", "gato", "elefante", "jirafa", "tigre", "leon", "delfin", "caballo"],
@@ -9,65 +9,90 @@ categories = {
 
 print("¡Bienvenido al Ahorcado con categorías!\n")
 
-# Mostrar categorías disponibles
+# Mostrar las categorías disponibles
 print("Categorías disponibles:")
 for i, category in enumerate(categories.keys(), 1):
     print(f"{i}. {category}")
 
-# Elegir categoría
+# Pedir al usuario que elija una categoría válida
 while True:
     choice = input("\nElige una categoría escribiendo su nombre: ").strip()
+    
     if choice in categories:
-        word = random.choice(categories[choice])
+        #  Mezclamos las palabras SIN repetir usando random.sample
+        shuffled_words = random.sample(categories[choice], len(categories[choice]))
+        
+        index = 0  # Índice para recorrer la lista de palabras
         break
     else:
         print("Categoría no válida. Intenta nuevamente.")
 
-guessed = []  # Letras que el jugador ya adivinó
-attempts = 6  # Número de intentos permitidos
-score = 0     # Puntaje del jugador
+score = 0  # Puntaje total del jugador
 
-while attempts > 0:
-    # Mostrar progreso: letras adivinadas y guiones para las que faltan
-    progress = ""
-    for letter in word:
-        if letter in guessed:
-            progress += letter + " "
+# Bucle principal del juego (varias rondas)
+while index < len(shuffled_words):
+
+    # Elegimos la palabra actual según el índice
+    word = shuffled_words[index]
+    index += 1  # Pasamos a la siguiente palabra para la próxima ronda
+
+    guessed = []   # Lista de letras ya usadas
+    attempts = 6   # Intentos disponibles
+
+    print("\n--- Nueva ronda ---")
+
+    #  Bucle de una partida (adivinar una palabra)
+    while attempts > 0:
+        progress = ""
+
+        # Construimos el progreso mostrando letras o guiones
+        for letter in word:
+            if letter in guessed:
+                progress += letter + " "
+            else:
+                progress += "_ "
+        
+        print("\n" + progress)
+
+        # Si no hay guiones, el jugador ganó
+        if "_" not in progress:
+            print("¡Ganaste!")
+            score += 6  # Sumamos puntos por ganar
+            break
+
+        # Mostrar info al jugador
+        print(f"Intentos restantes: {attempts}")
+        print(f"Letras usadas: {', '.join(guessed)}")
+
+        # Pedir una letra
+        letter = input("Ingresá una letra: ").lower()
+
+        # Validar que sea una sola letra
+        if len(letter) == 1 and letter.isalpha():
+            
+            if letter in guessed:
+                print("Ya usaste esa letra.")
+            
+            elif letter in word:
+                guessed.append(letter)
+                print("¡Bien! Esa letra está en la palabra.")
+            
+            else:
+                guessed.append(letter)
+                attempts -= 1   # Perdemos un intento
+                score -= 1      # Restamos puntos por error
+                print("Esa letra no está en la palabra.")
+        
         else:
-            progress += "_ "
-    print("\n" + progress)
+            print("Entrada no válida")
 
-    # Verificar si el jugador ya adivinó la palabra completa
-    if "_" not in progress:
-        print("¡Ganaste!")
-        score += 6  # Sumar 6 puntos por ganar
-        break
+    # si no adivinó la palabra
+    if "_" in progress:
+        print(f"\n¡Perdiste! La palabra era: {word}")
 
-    # Mostrar intentos restantes y letras usadas
-    print(f"Intentos restantes: {attempts}")
-    print(f"Letras usadas: {', '.join(guessed)}")
+    # Mostrar puntaje después de cada ronda
+    print(f"Puntaje actual: {score}")
 
-    # Pedir al jugador que ingrese una letra
-    letter = input("Ingresá una letra: ").lower()
-
-    # Validar que la entrada sea una sola letra
-    if len(letter) == 1 and letter.isalpha():
-        if letter in guessed:
-            print("Ya usaste esa letra.")
-        elif letter in word:
-            guessed.append(letter)
-            print("¡Bien! Esa letra está en la palabra.")
-        else:
-            guessed.append(letter)
-            attempts -= 1  # Restar un intento
-            score -= 1     # Restar 1 punto por letra incorrecta
-            print("Esa letra no está en la palabra.")
-    else:
-        print("Entrada no válida")
-
-# Si se terminaron los intentos
-if "_" in progress:
-    print(f"\n¡Perdiste! La palabra era: {word}")
-    score = 0
-
-print(f"\nTu puntaje final es: {score}")
+#  Cuando ya no quedan palabras
+print("\nSe terminaron las palabras de la categoría.")
+print(f"Tu puntaje final es: {score}")
